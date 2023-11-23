@@ -48,11 +48,29 @@ export class View {
     });
   }
 
+  render(currentPlayer, moves, wins, winner) {
+    this.#clearMoves();
+    this.#closeModal();
+    this.#closeMenu();
+    this.#initMoves(moves);
+    this.#updateScore(wins.wins[0], wins.wins[1], wins.ties);
+    if (winner.isCompleted) {
+      if (winner.winner) this.#openModal(`${winner.winner.name} wins!`);
+      else this.#openModal(`Tie!`);
+      return;
+    }
+    this.#setTurnIndicator(currentPlayer);
+  }
+
   toggleMenu() {
     this.$.menuItems.classList.toggle("hidden");
   }
 
-  setTurnIndicator(player) {
+  #closeMenu() {
+    this.$.menuItems.classList.add("hidden");
+  }
+
+  #setTurnIndicator(player) {
     this.$.turn.replaceChildren();
     const icon = document.createElement("i");
     const text = document.createElement("p");
@@ -62,7 +80,7 @@ export class View {
     this.$.turn.append(icon, text);
   }
 
-  playerMove(square, player) {
+  #playerMove(square, player) {
     const icon = document.createElement("i");
 
     icon.classList.add("fa-solid", player.icon, player.color);
@@ -70,27 +88,27 @@ export class View {
     square.replaceChildren(icon);
   }
 
-  initMove(moves) {
+  #initMoves(moves) {
     this.$$.squares.forEach((square) => {
       const player = moves.find((move) => move.squareId === +square.id)?.player;
-      if (player) this.playerMove(square, player);
+      if (player) this.#playerMove(square, player);
     });
   }
 
-  clearMoves() {
+  #clearMoves() {
     this.$$.squares.forEach((square) => square.replaceChildren());
   }
 
-  openModal(str) {
+  #openModal(str) {
     this.$.modalText.innerText = str;
     this.$.modal.classList.remove("hidden");
   }
 
-  closeModal(str) {
+  #closeModal(str) {
     this.$.modal.classList.add("hidden");
   }
 
-  updateScore(p1Wins, p2Wins, ties) {
+  #updateScore(p1Wins, p2Wins, ties) {
     this.$.p1Wins.innerText = `${p1Wins} Wins`;
     this.$.p2Wins.innerText = `${p2Wins} Wins`;
     this.$.ties.innerText = `${ties} Wins`;

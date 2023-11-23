@@ -7,11 +7,12 @@ const INIT_STATE = {
   oldMoves: [],
 };
 
-export class Store {
+export class Store extends EventTarget {
   players = [];
   key = "";
 
   constructor(players, key) {
+    super();
     this.players = players;
     this.key = key;
   }
@@ -124,5 +125,6 @@ export class Store {
 
   #setState(newState) {
     window.localStorage.setItem(this.key, JSON.stringify(newState));
+    this.dispatchEvent(new Event("state-change"));
   }
 }
