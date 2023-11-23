@@ -43,9 +43,7 @@ export class View {
   }
 
   bindPlayerMove(handler) {
-    this.$$.squares.forEach((square) => {
-      square.addEventListener("click", () => handler(square));
-    });
+    this.#delegate(this.$.grid, '[data-id="square"]', "click", handler);
   }
 
   render(currentPlayer, moves, wins, winner) {
@@ -124,5 +122,17 @@ export class View {
     const elems = document.querySelectorAll(selector);
     if (!elems) throw new Error(`Elements not found: ${selector}`);
     return elems;
+  }
+
+  /**
+   * Instead of adding event listeners to each element,
+   * we can add a single and then delegate the event to the element that matches the selector.
+   */
+  #delegate(elem, selector, eventKey, handler) {
+    elem.addEventListener(eventKey, (event) => {
+      if (event.target.matches(selector)) {
+        handler(event.target);
+      }
+    });
   }
 }
